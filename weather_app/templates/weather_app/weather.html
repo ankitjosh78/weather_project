@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'weather_app/style.css' %}">
+    <title>Weather Forecast</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Forecast</h1>
+        <form method="get">
+            <label for="city">Enter City Name:</label>
+            <input type="text" id="city" name="city" required>
+            <button type="submit">Get Weather</button>
+        </form>
+
+        {% if city %}
+            {% if current_weather_data %}
+                <div class="weather-section">
+                    <h2>Current Weather in {{ current_weather_data.name }} ({{ current_weather_data.sys.country }}):</h2>
+                    <div class="weather-card">
+                        <p><strong>Temperature:</strong> {{ current_weather_data.main.temp }}°C</p>
+                        <p><strong>Weather:</strong> {{ current_weather_data.weather.0.description|capfirst }}</p>
+                        <img src="http://openweathermap.org/img/wn/{{ current_weather_data.weather.0.icon }}@2x.png" alt="{{ current_weather_data.weather.0.description }}">
+                        <p><strong>Humidity:</strong> {{ current_weather_data.main.humidity }}%</p>
+                        <p><strong>Wind Speed:</strong> {{ current_weather_data.wind.speed }} m/s</p>
+                    </div>
+                </div>
+            {% else %}
+                <p>No current weather data available for {{ city }}.</p>
+            {% endif %}
+
+            {% if today_temperatures %}
+                <div class="weather-section">
+                    <h2>Today's Temperatures in {{ current_weather_data.name }} ({{ current_weather_data.sys.country }}):</h2>
+                    {% for item in today_temperatures %}
+                        <div class="forecast-card">
+                            <p><strong>Time:</strong> {{ item.hour }}</p>
+                            <p><strong>Temperature:</strong> {{ item.main.temp }}°C</p>
+                            <p><strong>Weather:</strong> {{ item.weather.0.description|capfirst }}</p>
+                            <img src="http://openweathermap.org/img/wn/{{ item.weather.0.icon }}@2x.png" alt="{{ item.weather.0.description }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No temperature data available for today.</p>
+            {% endif %}
+
+            {% if formatted_forecast_data %}
+                <div class="weather-section">
+                    <h2>5-Day Forecast for {{ city }}:</h2>
+                    {% for item in formatted_forecast_data %}
+                        <div class="forecast-card">
+                            <p><strong>{{ item.date }}</strong></p>
+                            <p><strong>Min Temperature:</strong> {{ item.min_temp }}°C</p>
+                            <p><strong>Max Temperature:</strong> {{ item.max_temp }}°C</p>
+                            <p><strong>Weather:</strong> {{ item.descriptions }}</p>
+                             <img class="icon" src="http://openweathermap.org/img/wn/{{ item.icon }}@2x.png" alt="{{ item.descriptions }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No forecast weather data available for {{ city }}.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
+
